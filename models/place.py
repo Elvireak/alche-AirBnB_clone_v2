@@ -1,9 +1,16 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-import os
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from os import getenv
+from sqlalchemy import Column, String, Integer, Float, ForeignKey, Table
 from sqlalchemy.orm import relationship
+from models.base_model import BaseModel, Base
+
+place_amenity = Table(
+    'place_amenity', Base.metadata,
+    Column('place_id', String(60), ForeignKey('places.id'),
+           primary_key=True, nullable=False),
+    Column('amenity_id', String(60), ForeignKey('amenities.id'),
+           primary_key=True, nullable=False))
 
 
 class Place(BaseModel, Base):
@@ -20,14 +27,30 @@ class Place(BaseModel, Base):
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
 
-    if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-        reviews = relationship('Review', backref='place',
-                               cascade='all, delete-orphan')
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        amenities = relationship('Amenity', secondary=place_amenity,
+                                 back_populates='place_amenities',
+                                 viewonly=False)
     else:
+        amenity_ids = []
+
         @property
-        def reviews(self):
-            """Getter for FileStorage: Reviews linked to this Place"""
+        def amenities(self):
+            """Returns the list of Amenity instances whose id is in
+            amenity_ids (FileStorage relationship)"""
             from models import storage
-            from models.review import Review
-            return [review for review in storage.all(Review).values()
-                    if review.place_id == self.id]
+            from models.amenity import Amenity
+            return [amenity for amenity in storage.all(Amenity).values()
+                    if amenity.id in self.amenity_ids]
+
+        @amenities.setter
+        def amenities(self, obj):
+            """Adds an Amenity id to amenity_ids; accepts only Amenity
+            objects, otherwise does nothing"""
+            from models.amenity import Amenity
+            if not isinstance(obj, Amenity):
+                return
+            if 'amenity_ids' not in self.__dict__:
+                self.amenity_ids = list(self.amenity_ids)
+            if obj.id not in self.amenity_ids:
+                self.amenity_ids.append(obj.id)
