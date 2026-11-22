@@ -33,6 +33,8 @@ class HBNBCommand(cmd.Cmd):
         print()
         return True
 
+    valid_classes = classes
+
     def do_create(self, arg):
         """Create a new object, with optional key=value parameters."""
         args = arg.split()
