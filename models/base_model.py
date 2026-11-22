@@ -3,6 +3,9 @@
 import uuid
 from datetime import datetime
 import models
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 
 class BaseModel:
