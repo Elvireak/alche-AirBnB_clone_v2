@@ -7,9 +7,9 @@ from models.base_model import Base
 from models.user import User
 from models.state import State
 from models.city import City
-from models.amenity import Amenity
 from models.place import Place
-from models.review import Review
+
+CLASSES = [State, City, User, Place]
 
 
 class DBStorage:
@@ -33,10 +33,9 @@ class DBStorage:
     def all(self, cls=None):
         """Return a dictionary of all objects, or of one class only."""
         if cls is None:
-            classes = [User, State, City, Amenity, Place, Review]
+            classes = CLASSES
         elif isinstance(cls, str):
-            classes = [c for c in (User, State, City, Amenity, Place, Review)
-                       if c.__name__ == cls]
+            classes = [c for c in CLASSES if c.__name__ == cls]
         else:
             classes = [cls]
         result = {}
