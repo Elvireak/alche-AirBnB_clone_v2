@@ -1,2 +1,9 @@
 #!/usr/bin/python3
-"""Module for the city class (to be completed)."""
+"""Module that defines the City class."""
+from models.base_model import BaseModel
+
+
+class City(BaseModel):
+    """Represents a city that belongs to a state."""
+    state_id = ""
+    name = ""

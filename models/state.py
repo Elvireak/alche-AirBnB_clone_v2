@@ -1,2 +1,8 @@
 #!/usr/bin/python3
-"""Module for the state class (to be completed)."""
+"""Module that defines the State class."""
+from models.base_model import BaseModel
+
+
+class State(BaseModel):
+    """Represents a state."""
+    name = ""
