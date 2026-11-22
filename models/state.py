@@ -14,3 +14,11 @@ class State(BaseModel, Base):
         cities = relationship("City", cascade="all, delete", backref="state")
     else:
         name = ""
+
+        @property
+        def cities(self):
+            """Return the list of City objects linked to this State."""
+            import models
+            from models.city import City
+            return [city for city in models.storage.all(City).values()
+                    if city.state_id == self.id]
